@@ -49,6 +49,7 @@ int main() {
                   << "2. Dodaj zadanie\n"
                   << "3. Oznacz jako wykonane\n"
                   << "4. Usuń zadanie\n"
+                  << "5. Edytuj zadanie\n"
                   << "0. Wyjście\n"
                   << "Twój wybór: ";
         std::cin >> choice;
@@ -87,6 +88,26 @@ int main() {
                 if (index >= 1 && index <= (int)tasks.size()) {
                     tasks.erase(tasks.begin() + index - 1);
                     saveTasks(tasks);
+                }
+                break;
+            }
+            case 5: {
+                int index;
+                showTasks(tasks);
+                std::cout << "Które zadanie chcesz edytować? (numer): ";
+                std::cin >> index;
+                std::cin.ignore();
+
+                if (index >= 1 && index <= (int)tasks.size()) {
+                    std::string newContent;
+                    std::cout << "Nowa treść zadania: ";
+                    std::getline(std::cin, newContent);
+
+                    tasks[index - 1].content = newContent;
+                    saveTasks(tasks);
+                    std::cout << "✅ Zadanie zostało zaktualizowane.\n";
+                } else {
+                    std::cout << "❌ Nieprawidłowy numer zadania.\n";
                 }
                 break;
             }
