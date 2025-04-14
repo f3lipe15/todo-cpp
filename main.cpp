@@ -2,6 +2,9 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include "include/json.hpp"
+using json = nlohmann::json;
+
 
 struct Task {
     std::string content;
@@ -10,25 +13,35 @@ struct Task {
 
 std::vector<Task> loadTasks() {
     std::vector<Task> tasks;
-    std::ifstream file("tasks.txt");
-    std::string line;
+    std::ifstream file("tasks.json");
 
-    while (std::getline(file, line)) {
-        if (line.empty()) continue;
-        bool done = line[0] == '1';
-        std::string content = line.substr(2);
-        tasks.push_back({content, done});
+    if (!file.is_open()) return tasks;
+
+    json data;
+    file >> data;
+
+    for (const auto& item : data) {
+        tasks.push_back({item["content"], item["done"]});
     }
 
     return tasks;
 }
 
+
 void saveTasks(const std::vector<Task>& tasks) {
-    std::ofstream file("tasks.txt");
+    json data = json::array();
+
     for (const auto& task : tasks) {
-        file << (task.done ? "1" : "0") << " " << task.content << "\n";
+        data.push_back({
+            {"content", task.content},
+            {"done", task.done}
+        });
     }
+
+    std::ofstream file("tasks.json");
+    file << data.dump(4); // pretty print z wcięciem
 }
+
 
 void showTasks(const std::vector<Task>& tasks) {
     std::cout << "\n--- Twoje zadania ---\n";
